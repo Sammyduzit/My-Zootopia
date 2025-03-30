@@ -8,23 +8,22 @@ def load_data(file_path):
 
 animals_data = load_data('animals_data.json')
 
-animals = []
-for entry in animals_data:
-    # Create dict container for each animal
-    animal_dict = {}
+def display_data():
+    animals = [
+        {
+            "name": entry.get("name"),
+            "diet": entry.get("taxonomy", {}).get("order"),
+            "locations": ", ".join(entry.get("locations", [])),
+            "type": entry.get("characteristics", {}).get("type")
+        }
+        for entry in animals_data
+    ]
 
-    # Get data for each animal, if no data value will be None
-    animal_dict["name"] = entry.get("name")
-    animal_dict["diet"] = entry.get("taxonomy", {}).get("order")
-    locations = entry.get("locations")
-    animal_dict["locations"] = ", ".join(locations)
-    animal_dict["type"] = entry.get("characteristics", {}).get("type")
+    for animal in animals:
+        for entry in animal:
+            if animal[entry]:
+                print(f"{entry}: {animal[entry]}")
+        print("")
 
-    # Add data to animals list
-    animals.append(animal_dict)
 
-for animal in animals:
-    for entry in animal:
-        if animal[entry]:
-            print(f"{entry}: {animal[entry]}")
-    print("")
+display_data()
