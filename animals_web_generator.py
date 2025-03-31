@@ -36,13 +36,15 @@ def generate_string(data):
 
     for animal in animals:
         # append information to each string
-        output += "<li class='cards_item'>\n"
-        output += f"Name: {animal['name']}<br/>\n"
-        output += f"Diet: {animal['diet']}<br/>\n"
-        output += f"Location(s): {animal['locations']}<br/>\n"
+        output += "<li class='cards__item'>\n"
+        output += f"<div class='card__title'> {animal['name']} </div>\n"
+        output += "<p class='card__text'>\n"
+        output += f"<strong> Diet: </strong> {animal['diet']} <br/>\n"
+        output += f"<strong> Location(s): </strong> {animal['locations']} <br/>\n"
         if animal['type']:
-            output += f"Type: {animal['type']}<br/>\n"
-        output += "</li>\n"
+            output += f"<strong> Type: </strong> {animal['type']} <br/>\n"
+        output += "</p>\n</li>\n"
+
 
     return output
 
