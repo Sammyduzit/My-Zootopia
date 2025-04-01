@@ -2,6 +2,7 @@ import json
 import sys
 from dataclasses import dataclass, field
 
+
 @dataclass
 class Taxonomy:
     kingdom: str = None
@@ -11,6 +12,7 @@ class Taxonomy:
     family: str = None
     genus: str = None
     scientific_name: str = None
+
 
 @dataclass
 class Characteristics:
@@ -35,6 +37,7 @@ class Characteristics:
     top_speed: str = None
     weight: str = None
     length: str = None
+
 
 @dataclass
 class Animal:
@@ -224,7 +227,7 @@ def generate_all_cards(animals):
     return "".join(generate_animal_card(animal) for animal in animals)
 
 
-def generate_html_content(matching, missing, show_all=False):
+def generate_html_content(user_selection, matching, missing, show_all=False):
     """Generate complete HTML content with sections"""
     html_parts = []
 
@@ -232,7 +235,7 @@ def generate_html_content(matching, missing, show_all=False):
         html_parts.append('<h2>All Animals</h2>')
         html_parts.extend(generate_animal_card(a) for a in matching)
     elif matching:
-        html_parts.append('<h2>Matching Animals</h2>')
+        html_parts.append(f'<h2>Matching Animals with {user_selection}</h2>')
         html_parts.extend(generate_animal_card(a) for a in matching)
 
     if missing:
@@ -255,8 +258,8 @@ def insert_data_into_template(template, animals_html):
 def get_unique_skin_types(animals):
     """
     Extract all unique skin_type values from animals data.
-    :param animals:
-    :return:
+    :param animals: List of Animal objects to process
+    :return: Set of unique skin_type strings found in the animals data (excluding None or empty values)
     """
     skin_types = set()
     for animal in animals:
@@ -267,9 +270,9 @@ def get_unique_skin_types(animals):
 
 def display_skin_types(skin_types):
     """
-
-    :param skin_types:
-    :return:
+    Display available skin type options to the user in a numbered list.
+    :param skin_types: Set of unique skin_type strings to display
+    :return: None
     """
     print("Available skin types:")
     print("0. Show all animals (ignore skin type)")
@@ -279,17 +282,19 @@ def display_skin_types(skin_types):
 
 def get_skin_type_by_user(skin_types):
     """
-
-    :param skin_types:
-    :return:
+    Prompt user to select a skin type from available options (case-insensitive).
+    :param skin_types: Set of available skin types
+    :return: The selected skin type or 'all'
     """
+    skin_types_lower = {skin.lower(): skin for skin in skin_types}
+
     while True:
         try:
             choice = input("\nEnter the skin type you want to filter by: ").strip()
-            if choice == '0':
+            if choice == '0' or choice.lower() == "all":
                 user_selection = 'all'
                 break
-            if choice in skin_types:
+            if choice in skin_types_lower:
                 user_selection = choice
                 break
             if choice.isdigit() and 0 < int(choice) <= len(skin_types):
@@ -303,10 +308,14 @@ def get_skin_type_by_user(skin_types):
 
 def filter_animals_by_skin_type(animals, selected_skin_type):
     """
-    Separate animals into matching and missing skin_type groups.
-    :param animals:
-    :param selected_skin_type:
-    :return:
+    Separate animals into matching and missing skin type groups.
+    :param animals: List of Animal objects to filter
+    :param selected_skin_type: String specifying the skin type to filter by
+            ('all' will return all animals in first group)
+    :return: tuple: (matching_animals, missing_skin_animals) where:
+               - matching_animals: List of animals with matching skin_type
+               - missing_skin_animals: List of animals with no skin_type data
+                                      (empty list when selected_skin_type is 'all')
     """
     matching = []
     missing = []
@@ -321,6 +330,7 @@ def filter_animals_by_skin_type(animals, selected_skin_type):
             matching.append(animal)
 
     return matching, missing
+
 
 def main():
     """
@@ -340,17 +350,17 @@ def main():
     display_skin_types(skin_types)
     user_selection = get_skin_type_by_user(skin_types)
 
-    #Filter animals and generate HTML
+    #Filter animals
     matching, missing = filter_animals_by_skin_type(animals, user_selection)
-    print(f"\nFound {len(matching)} matching animals")
+    print(f"\nFound {len(matching)} matching animal(s)")
     if missing:
-        print(f"Plus {len(missing)} animals with unspecified skin type")
+        print(f"Plus {len(missing)} animal(s) with unspecified skin type")
 
+    #Generate HTML
     html_template = load_html_template("animals_template.html")
     show_all = user_selection.lower() == 'all'
-    animals_html = generate_html_content(matching, missing, show_all)
+    animals_html = generate_html_content(user_selection, matching, missing, show_all)
     final_html = insert_data_into_template(html_template, animals_html)
-
 
     save_to_file("animals.html", final_html)
 
