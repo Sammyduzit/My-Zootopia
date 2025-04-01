@@ -235,7 +235,7 @@ def generate_html_content(user_selection, matching, missing, show_all=False):
         html_parts.append('<h2>All Animals</h2>')
         html_parts.extend(generate_animal_card(a) for a in matching)
     elif matching:
-        html_parts.append(f'<h2>Matching Animals with {user_selection}</h2>')
+        html_parts.append(f'<h2>Matching Animals with {user_selection.capitalize()}</h2>')
         html_parts.extend(generate_animal_card(a) for a in matching)
 
     if missing:
