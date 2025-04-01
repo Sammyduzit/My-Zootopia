@@ -174,39 +174,41 @@ def generate_animal_card(animal_obj):
     if animal_obj.name:
         card.append(f'<div class="card__title">{animal_obj.name}</div>')
 
-    card.append('<p class="card__text">')
+    card.append('<div class="card__text">')
+    card.append("<ul>")
 
     if animal_obj.taxonomy.scientific_name:
-        card.append(f'<strong>Scientific Name:</strong> {animal_obj.taxonomy.scientific_name}<br/>')
+        card.append(f'<li><strong>Scientific Name:</strong> {animal_obj.taxonomy.scientific_name}</li>')
 
     if animal_obj.characteristics.type:
-        card.append(f'<strong>Type:</strong> {animal_obj.characteristics.type}<br/>')
+        card.append(f'<li><strong>Type:</strong> {animal_obj.characteristics.type}</li>')
 
     if animal_obj.locations:
-        card.append(f'<strong>Location(s):</strong> {", ".join(animal_obj.locations)}<br/>')
+        card.append(f'<li><strong>Location(s):</strong> {", ".join(animal_obj.locations)}</li>')
 
     if animal_obj.characteristics.habitat:
-        card.append(f'<strong>Habitat:</strong> {animal_obj.characteristics.habitat}<br/>')
+        card.append(f'<li><strong>Habitat:</strong> {animal_obj.characteristics.habitat}</li>')
 
     if animal_obj.characteristics.diet:
-        card.append(f'<strong>Diet:</strong> {animal_obj.characteristics.diet}<br/>')
+        card.append(f'<li><strong>Diet:</strong> {animal_obj.characteristics.diet}</li>')
 
     if animal_obj.characteristics.main_prey:
-        card.append(f'<strong>Main Prey:</strong> {animal_obj.characteristics.main_prey}<br/>')
+        card.append(f'<li><strong>Main Prey:</strong> {animal_obj.characteristics.main_prey}</li>')
 
     if animal_obj.characteristics.predators:
-        card.append(f'<strong>Predators:</strong> {animal_obj.characteristics.predators}<br/>')
+        card.append(f'<li><strong>Predators:</strong> {animal_obj.characteristics.predators}</li>')
 
     if animal_obj.characteristics.distinctive_feature:
-        card.append(f'<strong>Distinctive Features:</strong> {animal_obj.characteristics.distinctive_feature}<br/>')
+        card.append(f'<li><strong>Distinctive Features:</strong> {animal_obj.characteristics.distinctive_feature}</li>')
 
     if animal_obj.characteristics.temperament:
-        card.append(f'<strong>Temperament:</strong> {animal_obj.characteristics.temperament}<br/>')
+        card.append(f'<li><strong>Temperament:</strong> {animal_obj.characteristics.temperament}</li>')
 
     if animal_obj.characteristics.name_of_young:
-        card.append(f'<strong>Offspring Name:</strong> {animal_obj.characteristics.name_of_young}<br/>')
+        card.append(f'<li><strong>Offspring Name:</strong> {animal_obj.characteristics.name_of_young}</li>')
 
-    card.append("</p>")
+    card.append("</ul>")
+    card.append("</div>")
     card.append("</li>")
     return "\n".join(card) + "\n"
 

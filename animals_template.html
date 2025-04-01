@@ -11,13 +11,17 @@
 
 
         html {
-          background-color: #ffe9e9;
+          background-color: #F0F8FF;
+          height: 100%;
         }
 
         h1 {
             text-align: center;
             font-size: 40pt;
-            font-weight: normal;
+            font-weight: bold;
+            margin-bottom: 40px;
+            margin-top: 20px;
+            color: #000022;
         }
 
         body {
@@ -41,20 +45,22 @@
         }
 
         .cards__item {
-          background-color: white;
+          background-color: ivory;
           border-radius: 0.25rem;
           box-shadow: 0 20px 40px -14px rgba(0,0,0,0.25);
           overflow: hidden;
           padding: 1rem;
-          margin: 50px;
+          margin: 30px 50px;
         }
 
         .card__title {
-          color: @gray-dark;
-          font-size: 1.25rem;
-          font-weight: 300;
+          color: #000080;
+          font-size: 1.5rem;
+          font-weight: bold;
           letter-spacing: 2px;
           text-transform: uppercase;
+          margin-bottom: 15px;
+          text-align: center;
         }
 
         .card__text {
@@ -62,6 +68,13 @@
           font-size: 0.95rem;
           line-height: 2;
           margin-bottom: 1.25rem;
+          text-align: center;
+        }
+
+        .card__text ul {
+          list-style: none;
+          padding-left: 0;
+          margin-left: 0;
         }
         </style>
     </head>
