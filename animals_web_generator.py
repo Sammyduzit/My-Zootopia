@@ -162,50 +162,52 @@ def process_animal_data(animals_json_data):
     return animals
 
 
-def generate_animal_card(animal_obj):
+def generate_animal_card(animal_data):
     """
     Generate HTML card for a single animal.
     Silently skips any missing or None fields.
-    :param animal_obj: Dictionary containing animal data
+    :param animal_data: Dictionary containing animal data
     :return: HTML string with animal card infos
     """
     card = ['<li class="cards__item">']
 
-    if animal_obj.name:
-        card.append(f'<div class="card__title">{animal_obj.name}</div>')
+    if animal_data.name:
+        card.append(f'<div class="card__title">{animal_data.name}</div>')
 
-    card.append('<div class="card__text">')
-    card.append("<ul>")
+    card.append('<div class="card__text">\n<ul>')
 
-    if animal_obj.taxonomy.scientific_name:
-        card.append(f'<li><strong>Scientific Name:</strong> {animal_obj.taxonomy.scientific_name}</li>')
+    if animal_data.taxonomy.scientific_name:
+        card.append(f'<li><strong>Scientific Name:</strong> {animal_data.taxonomy.scientific_name}</li>')
 
-    if animal_obj.characteristics.type:
-        card.append(f'<li><strong>Type:</strong> {animal_obj.characteristics.type}</li>')
+    if animal_data.characteristics.type:
+        card.append(f'<li><strong>Type:</strong> {animal_data.characteristics.type}</li>')
 
-    if animal_obj.locations:
-        card.append(f'<li><strong>Location(s):</strong> {", ".join(animal_obj.locations)}</li>')
+    if animal_data.characteristics.skin_type:
+        card.append(f'<li><strong>Skin Type:</strong> {animal_data.characteristics.skin_type}</li>')
 
-    if animal_obj.characteristics.habitat:
-        card.append(f'<li><strong>Habitat:</strong> {animal_obj.characteristics.habitat}</li>')
+    if animal_data.locations:
+        card.append(f'<li><strong>Location(s):</strong> {", ".join(animal_data.locations)}</li>')
 
-    if animal_obj.characteristics.diet:
-        card.append(f'<li><strong>Diet:</strong> {animal_obj.characteristics.diet}</li>')
+    if animal_data.characteristics.habitat:
+        card.append(f'<li><strong>Habitat:</strong> {animal_data.characteristics.habitat}</li>')
 
-    if animal_obj.characteristics.main_prey:
-        card.append(f'<li><strong>Main Prey:</strong> {animal_obj.characteristics.main_prey}</li>')
+    if animal_data.characteristics.diet:
+        card.append(f'<li><strong>Diet:</strong> {animal_data.characteristics.diet}</li>')
 
-    if animal_obj.characteristics.predators:
-        card.append(f'<li><strong>Predators:</strong> {animal_obj.characteristics.predators}</li>')
+    if animal_data.characteristics.main_prey:
+        card.append(f'<li><strong>Main Prey:</strong> {animal_data.characteristics.main_prey}</li>')
 
-    if animal_obj.characteristics.distinctive_feature:
-        card.append(f'<li><strong>Distinctive Features:</strong> {animal_obj.characteristics.distinctive_feature}</li>')
+    if animal_data.characteristics.predators:
+        card.append(f'<li><strong>Predators:</strong> {animal_data.characteristics.predators}</li>')
 
-    if animal_obj.characteristics.temperament:
-        card.append(f'<li><strong>Temperament:</strong> {animal_obj.characteristics.temperament}</li>')
+    if animal_data.characteristics.distinctive_feature:
+        card.append(f'<li><strong>Distinctive Features:</strong> {animal_data.characteristics.distinctive_feature}</li>')
 
-    if animal_obj.characteristics.name_of_young:
-        card.append(f'<li><strong>Offspring Name:</strong> {animal_obj.characteristics.name_of_young}</li>')
+    if animal_data.characteristics.temperament:
+        card.append(f'<li><strong>Temperament:</strong> {animal_data.characteristics.temperament}</li>')
+
+    if animal_data.characteristics.name_of_young:
+        card.append(f'<li><strong>Offspring Name:</strong> {animal_data.characteristics.name_of_young}</li>')
 
     card.append("</ul>")
     card.append("</div>")
@@ -222,7 +224,25 @@ def generate_all_cards(animals):
     return "".join(generate_animal_card(animal) for animal in animals)
 
 
-def insert_into_template(template, animals_html):
+def generate_html_content(matching, missing, show_all=False):
+    """Generate complete HTML content with sections"""
+    html_parts = []
+
+    if show_all:
+        html_parts.append('<h2>All Animals</h2>')
+        html_parts.extend(generate_animal_card(a) for a in matching)
+    elif matching:
+        html_parts.append('<h2>Matching Animals</h2>')
+        html_parts.extend(generate_animal_card(a) for a in matching)
+
+    if missing:
+        html_parts.append('<h2 class="missing-data">Animals with Unspecified Skin Type</h2>')
+        html_parts.extend(generate_animal_card(a) for a in missing)
+
+    return ''.join(html_parts)
+
+
+def insert_data_into_template(template, animals_html):
     """
     Combine template with generated animal HTML.
     :param template: HTML template string
@@ -232,21 +252,106 @@ def insert_into_template(template, animals_html):
     return template.replace("__REPLACE_ANIMALS_INFO__", animals_html)
 
 
+def get_unique_skin_types(animals):
+    """
+    Extract all unique skin_type values from animals data.
+    :param animals:
+    :return:
+    """
+    skin_types = set()
+    for animal in animals:
+        if animal.characteristics.skin_type:
+            skin_types.add(animal.characteristics.skin_type)
+    return skin_types
+
+
+def display_skin_types(skin_types):
+    """
+
+    :param skin_types:
+    :return:
+    """
+    print("Available skin types:")
+    print("0. Show all animals (ignore skin type)")
+    for i, skin_type in enumerate(sorted(skin_types), 1):
+        print(f"{i}. {skin_type}")
+
+
+def get_skin_type_by_user(skin_types):
+    """
+
+    :param skin_types:
+    :return:
+    """
+    while True:
+        try:
+            choice = input("\nEnter the skin type you want to filter by: ").strip()
+            if choice == '0':
+                user_selection = 'all'
+                break
+            if choice in skin_types:
+                user_selection = choice
+                break
+            if choice.isdigit() and 0 < int(choice) <= len(skin_types):
+                user_selection = sorted(skin_types)[int(choice)-1]
+                break
+            print("Invalid selection. Please choose from the listed skin types.")
+        except (EOFError, KeyboardInterrupt):
+            sys.exit("Operation cancelled by user.")
+    return user_selection
+
+
+def filter_animals_by_skin_type(animals, selected_skin_type):
+    """
+    Separate animals into matching and missing skin_type groups.
+    :param animals:
+    :param selected_skin_type:
+    :return:
+    """
+    matching = []
+    missing = []
+
+    if selected_skin_type.lower() == 'all':
+        return animals, []
+
+    for animal in animals:
+        if not animal.characteristics.skin_type:
+            missing.append(animal)
+        elif animal.characteristics.skin_type.lower() == selected_skin_type.lower():
+            matching.append(animal)
+
+    return matching, missing
+
 def main():
     """
     Main function that orchestrates the program flow:
-    1. Load raw animal data
-    2. Process into structured objects
-    3. Load HTML template
-    4. Generate animal cards HTML
-    5. Combine with template
-    6. Save final output
+    1. Load and process animal data
+    2. Show available skin types
+    3. Get user selection
+    4. Filter animals
+    5. Generate and save HTML
     """
+    # Load and process data
     json_data = load_json_file('animals_data.json')
     animals = process_animal_data(json_data)
+
+    # Display skin types and get user choice
+    skin_types = get_unique_skin_types(animals)
+    display_skin_types(skin_types)
+    user_selection = get_skin_type_by_user(skin_types)
+
+    #Filter animals and generate HTML
+    matching, missing = filter_animals_by_skin_type(animals, user_selection)
+    print(f"\nFound {len(matching)} matching animals")
+    if missing:
+        print(f"Plus {len(missing)} animals with unspecified skin type")
+
     html_template = load_html_template("animals_template.html")
-    animals_html = generate_all_cards(animals)
-    final_html = insert_into_template(html_template, animals_html)
+    show_all = user_selection.lower() == 'all'
+    animals_html = generate_html_content(matching, missing, show_all)
+    final_html = insert_data_into_template(html_template, animals_html)
+
+
     save_to_file("animals.html", final_html)
 
 
