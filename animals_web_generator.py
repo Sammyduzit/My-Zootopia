@@ -218,15 +218,6 @@ def generate_animal_card(animal_data):
     return "\n".join(card) + "\n"
 
 
-def generate_all_cards(animals):
-    """
-    Generate the HTML string for all animals.
-    :param animals: List of Animal objects
-    :return: String containing HTML markup for all animal cards
-    """
-    return "".join(generate_animal_card(animal) for animal in animals)
-
-
 def generate_html_content(user_selection, matching, missing, show_all=False):
     """Generate complete HTML content with sections"""
     html_parts = []
